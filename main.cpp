@@ -51,6 +51,7 @@ void scroll_callback ( GLFWwindow *window, double xoffset, double yoffset )
 { std::cout << "Movida la rueda del ratón " << xoffset
             << " Unidades en horizontal y " << yoffset
             << " unidades en vertical" << std::endl;
+    window_refresh_callback(window);
 }
 
 
