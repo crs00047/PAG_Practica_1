@@ -51,6 +51,20 @@ void scroll_callback ( GLFWwindow *window, double xoffset, double yoffset )
 { std::cout << "Movida la rueda del ratón " << xoffset
             << " Unidades en horizontal y " << yoffset
             << " unidades en vertical" << std::endl;
+
+    if(xoffset == 0 && yoffset > 0){
+        glClearColor(1,0,0,1);
+    }
+    if(xoffset == 0 && yoffset < 0){
+        glClearColor(0,0,1,1);
+    }
+    if(xoffset > 0 && yoffset == 0){
+        glClearColor(0,1,0,1);
+    }
+    if(xoffset < 0 && yoffset == 0){
+        glClearColor(1,1,1,1);
+    }
+
     window_refresh_callback(window);
 }
 
