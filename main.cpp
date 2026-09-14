@@ -52,18 +52,25 @@ void scroll_callback ( GLFWwindow *window, double xoffset, double yoffset )
             << " Unidades en horizontal y " << yoffset
             << " unidades en vertical" << std::endl;
 
-    if(xoffset == 0 && yoffset > 0){
-        glClearColor(1,0,0,1);
-    }
-    if(xoffset == 0 && yoffset < 0){
-        glClearColor(0,0,1,1);
-    }
-    if(xoffset > 0 && yoffset == 0){
-        glClearColor(0,1,0,1);
-    }
-    if(xoffset < 0 && yoffset == 0){
-        glClearColor(1,1,1,1);
-    }
+    //  Vector de tamaño 4 para el R,G,B,A (opacidad)
+    GLfloat color[4];
+
+    // Cuanto cambiar con cada tick de raton
+    float raton = 0.05f;
+
+    // Como sacar el color actual, gl_color_clear_value (donde se alamcena el color)
+    glGetFloatv(GL_COLOR_CLEAR_VALUE, color);
+
+    //RGB
+
+    color[0] += (float)yoffset * raton;
+    color[1] += (float)yoffset * raton;
+    color[2] += (float)yoffset * raton;
+
+    // Opacidad
+    color[3] += (float)xoffset * raton;
+
+    glClearColor(color[0], color[1], color[2], color[3]);
 
     window_refresh_callback(window);
 }
