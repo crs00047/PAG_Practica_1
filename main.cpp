@@ -70,6 +70,30 @@ void scroll_callback ( GLFWwindow *window, double xoffset, double yoffset )
     // Opacidad
     color[3] += (float)xoffset * raton;
 
+    // Limite de color por debajo de 0
+
+    if (color[0] < 0.0f) color[0] = 0.0f;
+    if (color[1] < 0.0f) color[1] = 0.0f;
+    if (color[2] < 0.0f) color[2] = 0.0f;
+
+    //Limite de color por encima de 1
+
+    //Buscar el mayor
+    float maxColor = color[0];
+    if (color[1] > maxColor) maxColor = color[1];
+    if (color[2] > maxColor) maxColor = color[2];
+
+    //Bajar los demas respecto al mayor
+    if (maxColor > 1.0f) {
+        color[0] = color[0] / maxColor;
+        color[1] = color[1] / maxColor;
+        color[2] = color[2] / maxColor;
+    }
+
+    // Limitar A
+    if (color[3] > 1.0f) color[3] = 1.0f;
+    if (color[3] < 0.0f) color[3] = 0.0f;
+
     glClearColor(color[0], color[1], color[2], color[3]);
 
     window_refresh_callback(window);
