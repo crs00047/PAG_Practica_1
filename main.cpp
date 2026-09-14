@@ -53,7 +53,7 @@ void scroll_callback ( GLFWwindow *window, double xoffset, double yoffset )
             << " unidades en vertical" << std::endl;
 
     //  Vector de tamaño 4 para el R,G,B,A (opacidad)
-    GLfloat color[4];
+    GLfloat color[4] = {0.0f};
 
     // Cuanto cambiar con cada tick de raton
     float raton = 0.05f;
