@@ -18,7 +18,10 @@ void error_callback ( int errno, const char* desc )
 // - Esta función callback será llamada cada vez que el área de dibujo
 // OpenGL deba ser redibujada.
 void window_refresh_callback ( GLFWwindow *window )
-{ glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+{
+    // glClear con windows_refresh de Renderer
+    PAG::Renderer::getInstancia().window_refresh();
+
 // - GLFW usa un doble buffer para que no haya parpadeo. Esta orden
 // intercambia el buffer back (que se ha estado dibujando) por el
 // que se mostraba hasta ahora front. Debe ser la última orden de
@@ -30,7 +33,10 @@ void window_refresh_callback ( GLFWwindow *window )
 // - Esta función callback será llamada cada vez que se cambie el tamaño
 // del área de dibujo OpenGL.
 void framebuffer_size_callback ( GLFWwindow *window, int width, int height )
-{ glViewport ( 0, 0, width, height );
+{
+    //Viewport con Renderer
+    PAG::Renderer::getInstancia().framebuffer_size(width, height);
+
     std::cout << "Resize callback called" << std::endl;
 }
 // - Esta función callback será llamada cada vez que se pulse una tecla
@@ -59,15 +65,13 @@ void scroll_callback ( GLFWwindow *window, double xoffset, double yoffset )
             << " unidades en vertical" << std::endl;
 
     //  Vector de tamaño 4 para el R,G,B,A (opacidad)
-    GLfloat color[4] = {0.0f};
+    const float* colorActual = PAG::Renderer::getInstancia().getColorFondo();
 
     // Cuanto cambiar con cada tick de raton
     float raton = 0.05f;
 
-
-
-    // Como sacar el color actual, gl_color_clear_value (donde se alamcena el color)
-    glGetFloatv(GL_COLOR_CLEAR_VALUE, color);
+    //Copia para modificar
+    float color[4] = { colorActual[0], colorActual[1], colorActual[2], colorActual[3] };
 
     //RGB
 
@@ -102,9 +106,7 @@ void scroll_callback ( GLFWwindow *window, double xoffset, double yoffset )
     if (color[3] > 1.0f) color[3] = 1.0f;
     if (color[3] < 0.0f) color[3] = 0.0f;
 
-    glClearColor(color[0], color[1], color[2], color[3]);
-
-    window_refresh_callback(window);
+    PAG::Renderer::getInstancia().setColorFondo(color[0], color[1], color[2], color[3]);
 }
 
 
@@ -163,7 +165,7 @@ int main()
         return -3;
     }
 
-
+    PAG::Renderer::getInstancia().inicializarOpenGL();
 
     //Inicializar IMGUI
     IMGUI_CHECKVERSION();
@@ -185,18 +187,6 @@ int main()
     glfwSetScrollCallback ( window, scroll_callback );
 
 
-// - Establecemos un gris medio como color con el que se borrará el
-// frame buffer.
-// No tiene por qué ejecutarse en cada paso por el ciclo de eventos.
-    glClearColor ( 0.6, 0.6, 0.6, 1.0 );
-
-
-// - Le decimos a OpenGL que tenga en cuenta la profundidad a la hora de
-// dibujar.
-// No tiene por qué ejecutarse en cada paso por el ciclo de eventos.
-    glEnable ( GL_DEPTH_TEST );
-
-
 // - Ciclo de eventos de la aplicación. La condición de parada es que la
 // ventana principal deba cerrarse, por ejemplo, si el usuario pulsa el
 // botón de cerrar la ventana (la X).
@@ -204,6 +194,9 @@ int main()
     { // - Obtiene y organiza los eventos pendientes, tales como pulsaciones
 // de teclas o de ratón, etc. Siempre al final de cada iteración del
 // ciclo de eventos y después de glfwSwapBuffers ( window );
+
+        //Refrescar ventana
+        PAG::Renderer::getInstancia().window_refresh();
 
         // Refresco Interfaz IMGUI
         ImGui_ImplOpenGL3_NewFrame();
