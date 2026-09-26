@@ -3,6 +3,12 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
+
+#include "Renderer.h"
+
 
 // - Esta función callback será llamada cuando GLFW produzca algún error
 void error_callback ( int errno, const char* desc )
@@ -58,6 +64,8 @@ void scroll_callback ( GLFWwindow *window, double xoffset, double yoffset )
     // Cuanto cambiar con cada tick de raton
     float raton = 0.05f;
 
+
+
     // Como sacar el color actual, gl_color_clear_value (donde se alamcena el color)
     glGetFloatv(GL_COLOR_CLEAR_VALUE, color);
 
@@ -104,6 +112,7 @@ int main()
 { std::cout << "Starting Application PAG - Prueba 01" << std::endl;
 
 
+
     // - Este callback hay que registrarlo ANTES de llamar a glfwInit
     glfwSetErrorCallback ( (GLFWerrorfun) error_callback );
 
@@ -125,6 +134,8 @@ int main()
     // - Definimos el puntero para guardar la dirección de la ventana de la aplicación y
     // la creamos
     GLFWwindow *window;
+
+
 
 
     // - Tamaño, título de la ventana, en ventana y no en pantalla completa,
@@ -152,6 +163,19 @@ int main()
         return -3;
     }
 
+
+
+    //Inicializar IMGUI
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO();
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+
+
+    //Completar incializacion IMGUI
+
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init();
 
     // - Registramos los callbacks que responderán a los eventos principales
     glfwSetWindowRefreshCallback ( window, window_refresh_callback );
@@ -181,8 +205,31 @@ int main()
 // de teclas o de ratón, etc. Siempre al final de cada iteración del
 // ciclo de eventos y después de glfwSwapBuffers ( window );
 
+        // Refresco Interfaz IMGUI
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+
+        //Controles IMGUI
+        ImGui::SetNextWindowPos(ImVec2 (10, 10), ImGuiCond_Once);
+
+
+
+        if( ImGui::Begin( "Mensajes"))
+        {
+            //La ventana está desplegada
+            ImGui::SetWindowFontScale(1.0f);
+
+        }
+        ImGui::End();
+
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+
         glfwSwapBuffers(window);
         glfwPollEvents ();
+
     }
 
 
@@ -191,6 +238,9 @@ int main()
     std::cout << "Finishing application Practica 1" << std::endl;
     glfwDestroyWindow ( window ); // - Cerramos y destruimos la ventana de la aplicación.
     window = nullptr;
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
     glfwTerminate (); // - Liberamos los recursos que ocupaba GLFW.
 
 }
