@@ -3,17 +3,15 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include <imgui.h>
-#include <imgui_impl_glfw.h>
-#include <imgui_impl_opengl3.h>
+
 
 #include "Renderer.h"
-
+#include "GUI.h"
 
 // - Esta función callback será llamada cuando GLFW produzca algún error
 void error_callback ( int errno, const char* desc )
 { std::string aux (desc);
-    std::cout << "Error de GLFW número " << errno << ": " << aux << std::endl;
+    PAG::GUI::getInstancia().añadirMensaje("Error de GLFW número " + std::to_string(errno) + ": " + aux);
 }
 // - Esta función callback será llamada cada vez que el área de dibujo
 // OpenGL deba ser redibujada.
@@ -28,6 +26,7 @@ void window_refresh_callback ( GLFWwindow *window )
 // este callback
     glfwSwapBuffers ( window );
     std::cout << "Refresh callback called" << std::endl;
+    PAG::GUI::getInstancia().añadirMensaje("Refresh callback called");
 }
 
 // - Esta función callback será llamada cada vez que se cambie el tamaño
@@ -37,32 +36,34 @@ void framebuffer_size_callback ( GLFWwindow *window, int width, int height )
     //Viewport con Renderer
     PAG::Renderer::getInstancia().framebuffer_size(width, height);
 
-    std::cout << "Resize callback called" << std::endl;
-}
+    PAG::GUI::getInstancia().añadirMensaje("Resize callback called: " + std::to_string(width) + "x" + std::to_string(height));}
 // - Esta función callback será llamada cada vez que se pulse una tecla
 // dirigida al área de dibujo OpenGL.
 void key_callback ( GLFWwindow *window, int key, int scancode, int action, int mods )
 { if ( key == GLFW_KEY_ESCAPE && action == GLFW_PRESS )
     { glfwSetWindowShouldClose(window, GLFW_TRUE);
     }
-    std::cout << "Key callback called" << std::endl;
-}
+    PAG::GUI::getInstancia().añadirMensaje("Key callback called");}
 // - Esta función callback será llamada cada vez que se pulse algún botón
 // del ratón sobre el área de dibujo OpenGL.
 void mouse_button_callback ( GLFWwindow *window, int button, int action, int mods )
-{ if ( action == GLFW_PRESS )
-    { std::cout << "Pulsado el botón: " << button << std::endl;
-    }
-    else if ( action == GLFW_RELEASE )
-    { std::cout << "Soltado el botón: " << button << std::endl;
+{
+    if (PAG::GUI::getInstancia().capturaRaton()) return;
+
+    if ( action == GLFW_PRESS ) {
+        PAG::GUI::getInstancia().añadirMensaje("Pulsado el botón: " + std::to_string(button));
+    } else if ( action == GLFW_RELEASE ) {
+        PAG::GUI::getInstancia().añadirMensaje("Soltado el botón: " + std::to_string(button));
     }
 }
 // - Esta función callback será llamada cada vez que se mueva la rueda
 // del ratón sobre el área de dibujo OpenGL.
 void scroll_callback ( GLFWwindow *window, double xoffset, double yoffset )
-{ std::cout << "Movida la rueda del ratón " << xoffset
-            << " Unidades en horizontal y " << yoffset
-            << " unidades en vertical" << std::endl;
+{
+
+    if (PAG::GUI::getInstancia().capturaRaton()) return;
+
+    PAG::GUI::getInstancia().añadirMensaje("Rueda movida: " + std::to_string(xoffset) + ", " + std::to_string(yoffset));
 
     //  Vector de tamaño 4 para el R,G,B,A (opacidad)
     const float* colorActual = PAG::Renderer::getInstancia().getColorFondo();
@@ -167,17 +168,8 @@ int main()
 
     PAG::Renderer::getInstancia().inicializarOpenGL();
 
-    //Inicializar IMGUI
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO();
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
 
 
-    //Completar incializacion IMGUI
-
-    ImGui_ImplGlfw_InitForOpenGL(window, true);
-    ImGui_ImplOpenGL3_Init();
 
     // - Registramos los callbacks que responderán a los eventos principales
     glfwSetWindowRefreshCallback ( window, window_refresh_callback );
@@ -186,6 +178,13 @@ int main()
     glfwSetMouseButtonCallback ( window, mouse_button_callback );
     glfwSetScrollCallback ( window, scroll_callback );
 
+
+    //Inicializar IMGUI con PAG::GUI
+    PAG::GUI::getInstancia().inicializar(window);
+
+
+    //Mensaje para ventana
+    PAG::GUI::getInstancia().añadirMensaje("Starting Application PAG - Prueba 01");
 
 // - Ciclo de eventos de la aplicación. La condición de parada es que la
 // ventana principal deba cerrarse, por ejemplo, si el usuario pulsa el
@@ -199,25 +198,15 @@ int main()
         PAG::Renderer::getInstancia().window_refresh();
 
         // Refresco Interfaz IMGUI
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
-
-        //Controles IMGUI
-        ImGui::SetNextWindowPos(ImVec2 (10, 10), ImGuiCond_Once);
+        PAG::GUI::getInstancia().nuevoFrame();
 
 
+        //Renderizar controles
+        PAG::GUI::getInstancia().renderizarControles();
 
-        if( ImGui::Begin( "Mensajes"))
-        {
-            //La ventana está desplegada
-            ImGui::SetWindowFontScale(1.0f);
 
-        }
-        ImGui::End();
-
-        ImGui::Render();
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        //Dibujar interfaz
+        PAG::GUI::getInstancia().dibujar();
 
 
         glfwSwapBuffers(window);
@@ -231,9 +220,10 @@ int main()
     std::cout << "Finishing application Practica 1" << std::endl;
     glfwDestroyWindow ( window ); // - Cerramos y destruimos la ventana de la aplicación.
     window = nullptr;
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
+
+    //Destruiz interfaz PAG::GUI
+    PAG::GUI::getInstancia().finalizar();
+
     glfwTerminate (); // - Liberamos los recursos que ocupaba GLFW.
 
 }
