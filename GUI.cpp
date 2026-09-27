@@ -62,6 +62,11 @@ namespace PAG {
         if (ImGui::Begin("Escena")) {
             ImGui::SetWindowFontScale(1.0f);
 
+            const float* colorActual = PAG::Renderer::getInstancia().getColorFondo();
+            colorGUI[0] = colorActual[0];
+            colorGUI[1] = colorActual[1];
+            colorGUI[2] = colorActual[2];
+
             if (ImGui::ColorEdit3("Color de fondo", colorGUI)) {
                 PAG::Renderer::getInstancia().setColorFondo(colorGUI[0], colorGUI[1], colorGUI[2], 1.0f);
             }
