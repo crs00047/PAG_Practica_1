@@ -11,7 +11,7 @@
 // - Esta función callback será llamada cuando GLFW produzca algún error
 void error_callback ( int errno, const char* desc )
 { std::string aux (desc);
-    PAG::GUI::getInstancia().añadirMensaje("Error de GLFW número " + std::to_string(errno) + ": " + aux);
+    PAG::GUI::getInstancia().anadirMensaje("Error de GLFW número " + std::to_string(errno) + ": " + aux);
 }
 // - Esta función callback será llamada cada vez que el área de dibujo
 // OpenGL deba ser redibujada.
@@ -26,7 +26,7 @@ void window_refresh_callback ( GLFWwindow *window )
 // este callback
     glfwSwapBuffers ( window );
     std::cout << "Refresh callback called" << std::endl;
-    PAG::GUI::getInstancia().añadirMensaje("Refresh callback called");
+    PAG::GUI::getInstancia().anadirMensaje("Refresh callback called");
 }
 
 // - Esta función callback será llamada cada vez que se cambie el tamaño
@@ -36,14 +36,14 @@ void framebuffer_size_callback ( GLFWwindow *window, int width, int height )
     //Viewport con Renderer
     PAG::Renderer::getInstancia().framebuffer_size(width, height);
 
-    PAG::GUI::getInstancia().añadirMensaje("Resize callback called: " + std::to_string(width) + "x" + std::to_string(height));}
+    PAG::GUI::getInstancia().anadirMensaje("Resize callback called: " + std::to_string(width) + "x" + std::to_string(height));}
 // - Esta función callback será llamada cada vez que se pulse una tecla
 // dirigida al área de dibujo OpenGL.
 void key_callback ( GLFWwindow *window, int key, int scancode, int action, int mods )
 { if ( key == GLFW_KEY_ESCAPE && action == GLFW_PRESS )
     { glfwSetWindowShouldClose(window, GLFW_TRUE);
     }
-    PAG::GUI::getInstancia().añadirMensaje("Key callback called");}
+    PAG::GUI::getInstancia().anadirMensaje("Key callback called");}
 // - Esta función callback será llamada cada vez que se pulse algún botón
 // del ratón sobre el área de dibujo OpenGL.
 void mouse_button_callback ( GLFWwindow *window, int button, int action, int mods )
@@ -51,9 +51,9 @@ void mouse_button_callback ( GLFWwindow *window, int button, int action, int mod
     if (PAG::GUI::getInstancia().capturaRaton()) return;
 
     if ( action == GLFW_PRESS ) {
-        PAG::GUI::getInstancia().añadirMensaje("Pulsado el botón: " + std::to_string(button));
+        PAG::GUI::getInstancia().anadirMensaje("Pulsado el botón: " + std::to_string(button));
     } else if ( action == GLFW_RELEASE ) {
-        PAG::GUI::getInstancia().añadirMensaje("Soltado el botón: " + std::to_string(button));
+        PAG::GUI::getInstancia().anadirMensaje("Soltado el botón: " + std::to_string(button));
     }
 }
 // - Esta función callback será llamada cada vez que se mueva la rueda
@@ -63,7 +63,7 @@ void scroll_callback ( GLFWwindow *window, double xoffset, double yoffset )
 
     if (PAG::GUI::getInstancia().capturaRaton()) return;
 
-    PAG::GUI::getInstancia().añadirMensaje("Rueda movida: " + std::to_string(xoffset) + ", " + std::to_string(yoffset));
+    PAG::GUI::getInstancia().anadirMensaje("Rueda movida: " + std::to_string(xoffset) + ", " + std::to_string(yoffset));
 
     //  Vector de tamaño 4 para el R,G,B,A (opacidad)
     const float* colorActual = PAG::Renderer::getInstancia().getColorFondo();
@@ -184,7 +184,14 @@ int main()
 
 
     //Mensaje para ventana
-    PAG::GUI::getInstancia().añadirMensaje("Starting Application PAG - Prueba 01");
+    PAG::GUI::getInstancia().anadirMensaje("Starting Application PAG - Prueba 01");
+
+
+    //Llamada a los métodos del shader
+
+    PAG::Renderer::getInstancia().creaShaderProgram();
+    PAG::Renderer::getInstancia().creaModelo();
+
 
 // - Ciclo de eventos de la aplicación. La condición de parada es que la
 // ventana principal deba cerrarse, por ejemplo, si el usuario pulsa el

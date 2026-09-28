@@ -31,7 +31,7 @@ namespace PAG{
         void dibujar();
         void finalizar();
 
-        void añadirMensaje(const std::string& msg);
+        void anadirMensaje(const std::string& msg);
         bool capturaRaton();
         bool capturaTeclado();
     };

@@ -85,7 +85,7 @@ namespace PAG {
         ImGui::DestroyContext();
     }
 
-    void GUI::añadirMensaje(const std::string &msg) {
+    void GUI::anadirMensaje(const std::string &msg) {
         mensajes.push_back(msg);
     }
 
