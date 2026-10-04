@@ -98,17 +98,81 @@ namespace PAG {
         "{ colorFragmento = vec4 ( 1.0, .4, .2, 1.0 );\n"
         "}\n";
         idVS = glCreateShader ( GL_VERTEX_SHADER );
+
+        // VERTEX SHADER
+        if (idVS == 0){
+            throw std::runtime_error("Error: No se pudo crear el objeto Vertex Array Shader");
+        }
+
         const GLchar* fuenteVS = miVertexShader.c_str ();
         glShaderSource ( idVS, 1, &fuenteVS, nullptr );
         glCompileShader ( idVS );
+
+        GLint resultadoCompilacionVS;
+        glGetShaderiv(idVS, GL_COMPILE_STATUS, &resultadoCompilacionVS);
+        if (resultadoCompilacionVS == GL_FALSE){
+            GLint  tamMsj = 0;
+            std::string mensaje = "";
+            glGetShaderiv(idVS, GL_INFO_LOG_LENGTH, &tamMsj);
+            if (tamMsj > 0){
+                GLchar* mensajeFormatoC = new GLchar;
+                GLint datosEscritos = 0;
+                glGetShaderInfoLog(idVS, tamMsj, &datosEscritos, mensajeFormatoC);
+                mensaje.assign(mensajeFormatoC);
+                delete[] mensajeFormatoC;
+            }
+            throw std::runtime_error("Error de compilación en Vertex Shader: \n" + mensaje);
+        }
+
+        //FRAGMENT SHADER
         idFS = glCreateShader ( GL_FRAGMENT_SHADER );
+        if (idFS == 0){
+            throw std::runtime_error("Error: No se pudo crear el objeto Fragment Shader.");
+        }
         const GLchar* fuenteFS = miFragmentShader.c_str ();
         glShaderSource ( idFS, 1, &fuenteFS, nullptr );
         glCompileShader ( idFS );
+
+        GLint resultadoCompilacionFS;
+        glGetShaderiv(idFS, GL_COMPILE_STATUS, &resultadoCompilacionFS);
+        if (resultadoCompilacionFS == GL_FALSE){
+            GLint tamMsj = 0;
+            std::string mensaje = "";
+            glGetShaderiv(idFS, GL_INFO_LOG_LENGTH, &tamMsj);
+            if (tamMsj > 0){
+                GLchar* mensajeFormatoC = new GLchar[tamMsj];
+                GLint datosEscritos = 0;
+                glGetShaderInfoLog(idFS, tamMsj, &datosEscritos, mensajeFormatoC);
+                mensaje.assign(mensajeFormatoC);
+                delete[] mensajeFormatoC;
+            }
+            throw std::runtime_error("Error de compilacion en Fragment Shader:\n" + mensaje);
+        }
+
+        // SHADER PROGRAM
         idSP = glCreateProgram ();
+        if (idSP == 0){
+            throw std::runtime_error("Error: No se pudo crear el objeto Shader Program");
+        }
         glAttachShader ( idSP, idVS );
         glAttachShader ( idSP, idFS );
         glLinkProgram ( idSP );
+
+        GLint resultadoEnlazado = 0;
+        glGetProgramiv(idSP, GL_LINK_STATUS, &resultadoEnlazado);
+        if (resultadoEnlazado == GL_FALSE){
+            GLint tamMsj = 0;
+            std::string mensaje = "";
+            glGetProgramiv(idSP, GL_INFO_LOG_LENGTH, &tamMsj);
+            if (tamMsj > 0){
+                GLchar* mensajeFormatoC = new GLchar[tamMsj];
+                GLint datosEscritos = 0;
+                glGetProgramInfoLog(idSP, tamMsj, &datosEscritos, mensajeFormatoC);
+                mensaje.assign(mensajeFormatoC);
+                delete[] mensajeFormatoC;
+            }
+            throw std::runtime_error("Error de enlazado en el Shader Program:\n" + mensaje);
+        }
     }
 
 

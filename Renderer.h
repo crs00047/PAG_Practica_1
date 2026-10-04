@@ -2,6 +2,7 @@
 // Created by CRISTIAN on 26/09/2026.
 //
 #include <glad/glad.h>
+#include <string>
 
 #ifndef PRACTICA_1_RENDERER_H
 #define PRACTICA_1_RENDERER_H
@@ -26,6 +27,7 @@ namespace PAG {
         GLuint idVBO = 0; //Identificador del vertex buffer object
         GLuint idIBO = 0; //Identificador del index buffer object
 
+        GLuint compilarShader(GLenum tipo, const std::string &codigoFuente, const std::string& nombreTipo);
     public:
 
         virtual ~Renderer();
@@ -41,7 +43,6 @@ namespace PAG {
         void creaShaderProgram();
         void creaModelo();
 
-        void refrescar();
 
     };
 

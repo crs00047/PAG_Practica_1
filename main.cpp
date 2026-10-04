@@ -7,6 +7,7 @@
 
 #include "Renderer.h"
 #include "GUI.h"
+#include <stdexcept>
 
 // - Esta función callback será llamada cuando GLFW produzca algún error
 void error_callback ( int errno, const char* desc )
