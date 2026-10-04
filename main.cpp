@@ -189,10 +189,12 @@ int main()
 
 
     //Llamada a los métodos del shader
-
-    PAG::Renderer::getInstancia().creaShaderProgram();
+try {
+    PAG::Renderer::getInstancia().creaShaderProgram("../pag03");
     PAG::Renderer::getInstancia().creaModelo();
-
+} catch (const std::runtime_error& e) {
+    PAG::GUI::getInstancia().anadirMensaje(e.what());
+}
 
 // - Ciclo de eventos de la aplicación. La condición de parada es que la
 // ventana principal deba cerrarse, por ejemplo, si el usuario pulsa el

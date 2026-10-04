@@ -40,7 +40,7 @@ namespace PAG {
         void setColorFondo(float r, float g, float b, float a);
         const float* getColorFondo() const;
 
-        void creaShaderProgram();
+        void creaShaderProgram(const std::string &nombreComun);
         void creaModelo();
 
 

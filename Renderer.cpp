@@ -4,7 +4,8 @@
 
 #include "Renderer.h"
 #include "iostream"
-
+#include "fstream"
+#include "sstream"
 
 namespace PAG {
 
@@ -84,19 +85,33 @@ namespace PAG {
 * Método para crear, compilar y enlazar el shader program
 * @note No se incluye ninguna comprobación de errores
 */
-    void PAG::Renderer::creaShaderProgram( )
-    { std::string miVertexShader =
-                "#version 410\n"
-                "layout (location = 0) in vec3 posicion;\n"
-                "void main ()\n"
-                "{ gl_Position = vec4 ( posicion, 1 );\n"
-                "}\n";
-        std::string miFragmentShader =
-        "#version 410\n"
-        "out vec4 colorFragmento;\n"
-        "void main ()\n"
-        "{ colorFragmento = vec4 ( 1.0, .4, .2, 1.0 );\n"
-        "}\n";
+    void PAG::Renderer::creaShaderProgram(const std::string &nombreComun)
+    {
+
+        std::string rutaVS = nombreComun + "-vs.glsl";
+        std::string rutaFS = nombreComun + "-fs.glsl";
+
+
+        // Carga del Vertex Shader desde archivo
+        std::ifstream archivoVS(rutaVS);
+        if (!archivoVS.is_open()) {
+            throw std::runtime_error("Error: No se pudo abrir el archivo " + rutaVS);
+        }
+        std::stringstream streamVS;
+        streamVS << archivoVS.rdbuf();
+        std::string miVertexShader = streamVS.str();
+        archivoVS.close();
+
+        // Carga del Fragment Shader desde archivo
+        std::ifstream archivoFS(rutaFS);
+        if (!archivoFS.is_open()) {
+            throw std::runtime_error("Error: No se pudo abrir el archivo " + rutaFS);
+        }
+        std::stringstream streamFS;
+        streamFS << archivoFS.rdbuf();
+        std::string miFragmentShader = streamFS.str();
+        archivoFS.close();
+
         idVS = glCreateShader ( GL_VERTEX_SHADER );
 
         // VERTEX SHADER
