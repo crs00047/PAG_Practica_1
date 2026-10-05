@@ -1,7 +1,7 @@
 //
 // Created by CRISTIAN on 26/09/2026.
 //
-#include <glad/glad.h>
+#include "glad/glad.h"
 #include <string>
 
 #ifndef PRACTICA_1_RENDERER_H
