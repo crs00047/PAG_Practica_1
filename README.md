@@ -23,3 +23,7 @@ con la función **glGetShaderiv** para conocer por parte de OpenGL el estado y l
 
 En el último (tercero) pasamos el texto que teniamos una variable tanto del vertex shader como del fragment shader usando un formato de nombre-tipo.glsl con una lectura
 por parte de stringstream, se convierte a c_str y por ultimo se compila. Por otro lado también corregí el manejo de excepciones en el main al no tener ningún catch o try.
+
+Respecto al comportamiento del triágulo, es probable en base a lo que se ha visto
+en teoría que se deba al reajuste de la pantalla haciendo que el triágulo se adapte constantemente al tamaño actual de pantalla
+ya que no reajustamos su ubicación de los vértices en pantalla
