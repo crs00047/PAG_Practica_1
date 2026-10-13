@@ -3,6 +3,7 @@
 //
 
 #include "Renderer.h"
+#include "GUI.h"
 #include "iostream"
 #include "fstream"
 #include "sstream"
@@ -48,6 +49,13 @@ namespace PAG {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor(colorFondo[0], colorFondo[1], colorFondo[2], colorFondo[3]);
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+        if (shader != nullptr) {
+            shader->activar();
+            shader->setMat4("view", camara.getViewMatrix());
+            shader->setMat4("projection", camara.getProjectionMatrix());
+        }
+
         glBindVertexArray(idVAO);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idIBO);
         glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
@@ -55,6 +63,7 @@ namespace PAG {
 
     void Renderer::framebuffer_size(int width, int height) {
         glViewport(0,0, width, height);
+        if (height > 0) camara.setAspect((float)width / (float)height);
     }
 
     void Renderer::setColorFondo(float r, float g, float b, float a) {
@@ -69,6 +78,13 @@ namespace PAG {
     }
 
 
+    void Renderer::cargarShader(const std::string &nombreComun) {
+        Shader* nuevoShader = new Shader();
+        nuevoShader->compilarYEnlazar(nombreComun);
+
+        if (shader != nullptr) delete shader;
+        shader = nuevoShader;
+    }
 
 
     /**
@@ -92,7 +108,10 @@ namespace PAG {
         glBufferData ( GL_ELEMENT_ARRAY_BUFFER, 3*sizeof(GLuint), indices, GL_STATIC_DRAW );
     }
 
-
+    void Renderer::moverCamara(float dx, float dy) {
+        MovimientoCamara mov = static_cast<MovimientoCamara>(GUI::getInstancia().getMovimientoActual());
+        camara.procesarMovimiento(mov, dx, dy);
+    }
 
 
 }

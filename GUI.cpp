@@ -7,6 +7,8 @@
 #include "imgui.h"
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
+#include <stdexcept>
+
 namespace PAG {
 
     GUI* GUI::instacia = nullptr;
@@ -70,6 +72,26 @@ namespace PAG {
             if (ImGui::ColorEdit3("Color de fondo", colorGUI)) {
                 PAG::Renderer::getInstancia().setColorFondo(colorGUI[0], colorGUI[1], colorGUI[2], 1.0f);
             }
+        }
+        ImGui::End();
+
+        ImGui::SetNextWindowPos(ImVec2(740, 10), ImGuiCond_Once);
+        if (ImGui::Begin("Shader Program")) {
+            ImGui::InputText("##ShaderName", nombreShader, sizeof(nombreShader), ImGuiInputTextFlags_AutoSelectAll);            if (ImGui::Button("Load")) {
+                try {
+                    PAG::Renderer::getInstancia().cargarShader(nombreShader);
+                    anadirMensaje("Shader program " + std::string(nombreShader) + " cargado.");
+                } catch (const std::runtime_error& e) {
+                    anadirMensaje(e.what());
+                }
+            }
+        }
+        ImGui::End();
+
+        ImGui::SetNextWindowPos(ImVec2(370, 150), ImGuiCond_Once);
+        if (ImGui::Begin("Camera")) {
+            const char* movimientos[] = { "Pan", "Tilt", "Dolly", "Crane", "Orbit", "Zoom" };
+            ImGui::Combo("Movement", &movimientoActual, movimientos, 6);
         }
         ImGui::End();
     }

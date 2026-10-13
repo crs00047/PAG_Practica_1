@@ -21,6 +21,9 @@ namespace PAG{
 
         std::vector<std::string> mensajes;
 
+        char nombreShader[128] = "pag03";
+        int movimientoActual = 0;
+
     public:
         virtual ~GUI();
         static GUI& getInstancia();
@@ -34,6 +37,8 @@ namespace PAG{
         void anadirMensaje(const std::string& msg);
         bool capturaRaton();
         bool capturaTeclado();
+
+        int getMovimientoActual() const { return movimientoActual; }
     };
 
 

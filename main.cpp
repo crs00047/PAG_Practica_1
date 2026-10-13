@@ -2,12 +2,17 @@
 // IMPORTANTE: El include de GLAD debe estar siempre ANTES de el de GLFW
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-
+#include "imgui.h"
 
 
 #include "Renderer.h"
 #include "GUI.h"
 #include <stdexcept>
+
+
+
+double lastX = 0.0, lastY = 0.0;
+bool isDragging = false;
 
 // - Esta función callback será llamada cuando GLFW produzca algún error
 void error_callback ( int errno, const char* desc )
@@ -41,22 +46,48 @@ void framebuffer_size_callback ( GLFWwindow *window, int width, int height )
 // - Esta función callback será llamada cada vez que se pulse una tecla
 // dirigida al área de dibujo OpenGL.
 void key_callback ( GLFWwindow *window, int key, int scancode, int action, int mods )
-{ if ( key == GLFW_KEY_ESCAPE && action == GLFW_PRESS )
-    { glfwSetWindowShouldClose(window, GLFW_TRUE);
+{
+    ImGuiIO& io = ImGui::GetIO();
+    io.AddKeyEvent(static_cast<ImGuiKey>(key), action == GLFW_PRESS);
+
+    if ( key == GLFW_KEY_ESCAPE && action == GLFW_PRESS ) {
+        glfwSetWindowShouldClose(window, GLFW_TRUE);
     }
+
     PAG::GUI::getInstancia().anadirMensaje("Key callback called");}
 // - Esta función callback será llamada cada vez que se pulse algún botón
 // del ratón sobre el área de dibujo OpenGL.
 void mouse_button_callback ( GLFWwindow *window, int button, int action, int mods )
 {
+
+    ImGuiIO& io = ImGui::GetIO();
+    io.AddMouseButtonEvent(button, action == GLFW_PRESS);
+
     if (PAG::GUI::getInstancia().capturaRaton()) return;
 
-    if ( action == GLFW_PRESS ) {
-        PAG::GUI::getInstancia().anadirMensaje("Pulsado el botón: " + std::to_string(button));
-    } else if ( action == GLFW_RELEASE ) {
-        PAG::GUI::getInstancia().anadirMensaje("Soltado el botón: " + std::to_string(button));
+    if (button == GLFW_MOUSE_BUTTON_LEFT) {
+        if ( action == GLFW_PRESS ) {
+            isDragging = true;
+            glfwGetCursorPos(window, &lastX, &lastY);
+        } else if ( action == GLFW_RELEASE ) {
+            isDragging = false;
+        }
     }
 }
+
+
+void cursor_position_callback(GLFWwindow* window, double xpos, double ypos) {
+    if (PAG::GUI::getInstancia().capturaRaton()) return;
+
+    if (isDragging) {
+        float dx = static_cast<float>(xpos - lastX);
+        float dy = static_cast<float>(ypos - lastY);
+        PAG::Renderer::getInstancia().moverCamara(dx, dy);
+        lastX = xpos;
+        lastY = ypos;
+    }
+}
+
 // - Esta función callback será llamada cada vez que se mueva la rueda
 // del ratón sobre el área de dibujo OpenGL.
 void scroll_callback ( GLFWwindow *window, double xoffset, double yoffset )
@@ -178,7 +209,7 @@ int main()
     glfwSetKeyCallback ( window, key_callback );
     glfwSetMouseButtonCallback ( window, mouse_button_callback );
     glfwSetScrollCallback ( window, scroll_callback );
-
+    glfwSetCursorPosCallback ( window, cursor_position_callback );
 
     //Inicializar IMGUI con PAG::GUI
     PAG::GUI::getInstancia().inicializar(window);
@@ -190,7 +221,7 @@ int main()
 
     //Llamada a los métodos del shader
 try {
-    PAG::Renderer::getInstancia().creaShaderProgram("../pag03");
+    PAG::Renderer::getInstancia().cargarShader("../pag03");
     PAG::Renderer::getInstancia().creaModelo();
 } catch (const std::runtime_error& e) {
     PAG::GUI::getInstancia().anadirMensaje(e.what());

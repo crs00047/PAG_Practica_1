@@ -7,6 +7,9 @@
 #ifndef PRACTICA_1_RENDERER_H
 #define PRACTICA_1_RENDERER_H
 
+#include "Shader.h"
+#include "Camara.h"
+
 //espacio de nombres para PAG::
 namespace PAG {
 
@@ -24,6 +27,9 @@ namespace PAG {
         GLuint idVBO = 0; //Identificador del vertex buffer object
         GLuint idIBO = 0; //Identificador del index buffer object
 
+        Shader* shader = nullptr;
+        Camara camara;
+
     public:
 
         virtual ~Renderer();
@@ -36,7 +42,11 @@ namespace PAG {
         void setColorFondo(float r, float g, float b, float a);
         const float* getColorFondo() const;
 
+        void cargarShader(const std::string &nombreComun);
         void creaModelo();
+
+        void moverCamara(float dx, float dy);
+        void setMovimientoCamara(int tipoMovimiento);
 
 
     };
