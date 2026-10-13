@@ -20,14 +20,10 @@ namespace PAG {
 
         // Atributos para los identificadores de la geometría y los shaders
 
-        GLuint idVS = 0; //Identificador del vertex shader
-        GLuint idFS = 0; //Identificador del fragment shader
-        GLuint idSP = 0; //Identificador el shader program
         GLuint idVAO = 0; //Identificador del vertex array object
         GLuint idVBO = 0; //Identificador del vertex buffer object
         GLuint idIBO = 0; //Identificador del index buffer object
 
-        GLuint compilarShader(GLenum tipo, const std::string &codigoFuente, const std::string& nombreTipo);
     public:
 
         virtual ~Renderer();
@@ -40,7 +36,6 @@ namespace PAG {
         void setColorFondo(float r, float g, float b, float a);
         const float* getColorFondo() const;
 
-        void creaShaderProgram(const std::string &nombreComun);
         void creaModelo();
 
 
