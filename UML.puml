@@ -1,13 +1,87 @@
 @startuml
-namespace PAG{
-    class Renderer {
-        - {static}  instancia : Renderer
-        - Renderer()
-        - colorFondo: float[]
+namespace PAG {
 
+    enum MovimientoCamara {
+        PAN
+        TILT
+        DOLLY
+        CRANE
+        ORBIT
+        ZOOM
+    }
+
+    class Camara {
+        - posicion : glm::vec3
+        - lookAt : glm::vec3
+        - up : glm::vec3
+        - fovy : float
+        - aspect : float
+        - zNear : float
+        - zFar : float
+        + Camara()
+        + setAspect(a : float) : void
+        + getViewMatrix() : glm::mat4
+        + getProjectionMatrix() : glm::mat4
+        + procesarMovimiento(mov : MovimientoCamara, dx : float, dy : float) : void
+    }
+
+    class Shader {
+        - idVS : GLuint
+        - idFS : GLuint
+        - idSP : GLuint
+        + Shader()
+        + ~Shader()
+        + compilarYEnlazar(nombreComun : const std::string&) : void
+        + activar() : void
+        + setMat4(nombre : const std::string&, mat : const glm::mat4&) : void
+    }
+
+    class Renderer {
+        - {static} instancia : Renderer*
+        - colorFondo : float[4]
+        - idVAO : GLuint
+        - idVBO : GLuint
+        - idIBO : GLuint
+        - shader : Shader*
+        - camara : Camara
+        - Renderer()
+        + ~Renderer()
+        + {static} getInstancia() : Renderer&
+        + inicializarOpenGL() : void
+        + window_refresh() : void
+        + framebuffer_size(width : int, height : int) : void
+        + setColorFondo(r : float, g : float, b : float, a : float) : void
+        + getColorFondo() : const float*
+        + cargarShader(nombreComun : const std::string&) : void
+        + creaModelo() : void
+        + moverCamara(dx : float, dy : float) : void
+        + setMovimientoCamara(tipoMovimiento : int) : void
     }
 
     class GUI {
+        - {static} instacia : GUI*
+        - colorGUI : float[3]
+        - mensajes : std::vector<std::string>
+        - nombreShader : char[128]
+        - movimientoActual : int
+        - GUI()
+        + ~GUI()
+        + {static} getInstancia() : GUI&
+        + inicializar(window : GLFWwindow*) : void
+        + nuevoFrame() : void
+        + renderizarControles() : void
+        + dibujar() : void
+        + finalizar() : void
+        + anadirMensaje(msg : const std::string&) : void
+        + capturaRaton() : bool
+        + capturaTeclado() : bool
+        + getMovimientoActual() : int
     }
+
+    Renderer *-- Camara : contiene
+    Renderer o-- Shader : referencia
+    Camara ..> MovimientoCamara : usa
+    Renderer ..> GUI : consulta
+    GUI ..> Renderer : invoca
 }
 @enduml
