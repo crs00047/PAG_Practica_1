@@ -8,7 +8,7 @@
 #include "Renderer.h"
 #include "GUI.h"
 #include <stdexcept>
-
+#include "Modelo.h"
 
 
 double lastX = 0.0, lastY = 0.0;
@@ -222,7 +222,9 @@ int main()
     //Llamada a los métodos del shader
 try {
     PAG::Renderer::getInstancia().cargarShader("../pag03");
-    PAG::Renderer::getInstancia().creaModelo();
+    PAG::Modelo* modeloPrueba = new PAG::Modelo("Triangulo de prueba");
+    modeloPrueba->crearTrianguloPrueba();
+    PAG::Renderer::getInstancia().anadirModelo(modeloPrueba);
 } catch (const std::runtime_error& e) {
     PAG::GUI::getInstancia().anadirMensaje(e.what());
 }

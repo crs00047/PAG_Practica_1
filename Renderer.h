@@ -9,6 +9,7 @@
 
 #include "Shader.h"
 #include "Camara.h"
+#include "Modelo.h"
 
 //espacio de nombres para PAG::
 namespace PAG {
@@ -23,12 +24,9 @@ namespace PAG {
 
         // Atributos para los identificadores de la geometría y los shaders
 
-        GLuint idVAO = 0; //Identificador del vertex array object
-        GLuint idVBO = 0; //Identificador del vertex buffer object
-        GLuint idIBO = 0; //Identificador del index buffer object
-
         Shader* shader = nullptr;
         Camara camara;
+        std::vector<Modelo*> modelos;
 
     public:
 
@@ -48,6 +46,10 @@ namespace PAG {
         void moverCamara(float dx, float dy);
         void setMovimientoCamara(int tipoMovimiento);
 
+
+        void anadirModelo(Modelo* m) { modelos.push_back(m); }
+        void eliminarModelo(int index);
+        std::vector<Modelo*>& getModelos() { return modelos; }
 
     };
 

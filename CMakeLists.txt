@@ -18,7 +18,9 @@ add_executable(${PROJECT_NAME} ${MY_FILES}
         Shader.cpp
         Shader.h
         Camara.cpp
-        Camara.h)
+        Camara.h
+        Modelo.cpp
+        Modelo.h)
 
 target_include_directories( ${PROJECT_NAME} PUBLIC GLAD/include
                                                     imgui/include)
@@ -26,4 +28,6 @@ target_include_directories( ${PROJECT_NAME} PUBLIC GLAD/include
 find_package(glfw3 CONFIG REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(glm CONFIG REQUIRED)
-target_link_libraries(${PROJECT_NAME} PRIVATE glfw OpenGL::GL glm::glm)
+find_package(assimp CONFIG REQUIRED)
+target_link_libraries(${PROJECT_NAME} PRIVATE glfw OpenGL::GL glm::glm assimp::assimp)
+
