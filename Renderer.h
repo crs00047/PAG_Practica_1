@@ -41,7 +41,6 @@ namespace PAG {
         const float* getColorFondo() const;
 
         void cargarShader(const std::string &nombreComun);
-        void creaModelo();
 
         void moverCamara(float dx, float dy);
         void setMovimientoCamara(int tipoMovimiento);

@@ -44,6 +44,7 @@ namespace PAG {
 
         void crearTrianguloPrueba();
         void dibujar(Shader* shader);
+        void cargarDesdeOBJ(const std::string& rutaArchivo);
     };
 }
 
