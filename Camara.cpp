@@ -37,7 +37,11 @@ namespace PAG {
             }
             case MovimientoCamara::TILT: {
                 glm::mat4 rot = glm::rotate(-dy * sensibilidadRot, u);
-                lookAt = posicion + glm::vec3(rot * glm::vec4(direccion, 0.0f));
+                glm::vec3 nuevaDir = glm::vec3(rot * glm::vec4(direccion, 0.0f));
+
+                if (glm::abs(glm::dot(glm::normalize(nuevaDir), up)) < 0.99f) {
+                    lookAt = posicion + nuevaDir;
+                }
                 break;
             }
             case MovimientoCamara::DOLLY: {
@@ -55,8 +59,16 @@ namespace PAG {
             case MovimientoCamara::ORBIT: {
                 glm::mat4 rotX = glm::rotate(-dx * sensibilidadRot, up);
                 glm::mat4 rotY = glm::rotate(-dy * sensibilidadRot, u);
+
                 glm::vec3 dist = posicion - lookAt;
-                posicion = lookAt + glm::vec3(rotX * rotY * glm::vec4(dist, 1.0f));
+
+                glm::vec3 nuevaDistY = glm::vec3(rotY * glm::vec4(dist, 0.0f));
+
+                if (glm::abs(glm::dot(glm::normalize(nuevaDistY), up)) > 0.99f) {
+                    rotY = glm::mat4(1.0f);
+                }
+
+                posicion = lookAt + glm::vec3(rotX * rotY * glm::vec4(dist, 0.0f));
                 break;
             }
             case MovimientoCamara::ZOOM: {

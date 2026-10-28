@@ -34,7 +34,7 @@ namespace PAG {
         //Reutilización de la función para el
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor(colorFondo[0], colorFondo[1], colorFondo[2], colorFondo[3]);
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        glPolygonMode ( GL_FRONT_AND_BACK, GL_LINE );
 
         if (shader != nullptr) {
             shader->activar();

@@ -40,3 +40,89 @@ Para la práctica 5, creamos la clase `Camara` junto a un enum `MovimientoCamara
 Con ellos calculamos las matrices de transformación de vista y proyección mediante `glm::lookAt` y `glm::perspective`.
 En la clase `Renderer` pasamos en cada frame las matrices calculadas de vista y proyección al shader activo mediante uniforms, pero se adapta el Vertex Shader para recibir estas matrices y transformar
 Por último, en la interfaz ImGui creamos la ventana "Camera" con un menú desplegable (`Combo`) para seleccionar el movimiento activo. Registrando todos los movimientos en el main con un callback `glfwSetCursorPosCallback`.
+
+
+
+# Práctica 6
+## Solución
+
+En el primer commit, se desacopla la gestión de los shaders de la clase Renderer creando la nueva clase `Modelo` y probarla en el main.
+
+Durante el segundo commit, intenté cargar los modelos obj con assimp pero daba errores que mirando por internet y consultando a la IA indicaban que eran problemas con
+los archivos .dll tal y como se mencionó en clase, intenté solucionarlo pero no se arreglaba, por lo que al final opté por una de las alternativas del guión `Tinyobjloader`.
+
+Durante el tercer commit se hace el resto del guion, como cambiar la interfaz para la carga de los modelos siendo posible varios, poder aplicar las transformaciones al modelo que solo se aplican al darle al botón ,
+corregir un error de la cámara cuando el ángulo llegaba a 90, escribir el diagrama UML en el readme.md en vez de en el archivo UML.puml como en la anterior práctica y por último redactar en este archivo que se ha hecho durante la práctica.
+
+
+## Diagrama UML
+
+```
+@startuml
+class Renderer {
+    - {static} instancia : Renderer*
+    - colorFondo : float[4]
+    - modelos : std::vector<Modelo*>
+    - shader : Shader*
+    - camara : Camara
+    + {static} getInstancia() : Renderer
+    + inicializarOpenGL() : void
+    + window_refresh() : void
+    + framebuffer_size(width: int, height: int) : void
+    + cargarShader(nombreComun: string) : void
+    + anadirModelo(m: Modelo*) : void
+    + eliminarModelo(index: int) : void
+    + getModelos() : std::vector<Modelo*>
+}
+
+class Modelo {
+    - idVAO : GLuint
+    - idVBO : GLuint
+    - idIBO : GLuint
+    - numIndices : int
+    - posicion : glm::vec3
+    - rotacion : glm::vec3
+    - escala : glm::vec3
+    + cargarDesdeOBJ(ruta: string) : void
+    + dibujar(shader: Shader*) : void
+    + getMatrizModelado() : mat4
+    + setPosicion(p: vec3) : void
+    + setRotacion(r: vec3) : void
+    + setEscala(e: vec3) : void
+}
+
+class GUI {
+    - {static} instancia : GUI*
+    - mensajes : std::vector<string>
+    - modeloSeleccionado : int
+    - inputPosicion : float[3]
+    - inputRotacion : float[3]
+    - inputEscala : float[3]
+    + {static} getInstancia() : GUI
+    + renderizarControles() : void
+    + anadirMensaje(msg: string) : void
+}
+
+class Camara {
+    - posicion : glm::vec3
+    - lookAt : glm::vec3
+    - fov : float
+    + getViewMatrix() : mat4
+    + getProjectionMatrix() : mat4
+    + procesarMovimiento(mov: MovimientoCamara, dx: float, dy: float) : void
+}
+
+class Shader {
+    - idVS : GLuint
+    - idFS : GLuint
+    - idSP : GLuint
+    + compilarYEnlazar(nombre: string) : void
+    + activar() : void
+    + setMat4(nombre: string, mat: mat4) : void
+}
+
+Renderer "1" *-- "0..*" Modelo : contiene
+Renderer "1" *-- "1" Shader : usa
+Renderer "1" *-- "1" Camara : usa
+GUI ..> Renderer : interactúa
+@enduml

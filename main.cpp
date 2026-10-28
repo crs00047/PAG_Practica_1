@@ -47,14 +47,12 @@ void framebuffer_size_callback ( GLFWwindow *window, int width, int height )
 // dirigida al área de dibujo OpenGL.
 void key_callback ( GLFWwindow *window, int key, int scancode, int action, int mods )
 {
-    ImGuiIO& io = ImGui::GetIO();
-    io.AddKeyEvent(static_cast<ImGuiKey>(key), action == GLFW_PRESS);
-
-    if ( key == GLFW_KEY_ESCAPE && action == GLFW_PRESS ) {
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, GLFW_TRUE);
     }
 
-    PAG::GUI::getInstancia().anadirMensaje("Key callback called");}
+    PAG::GUI::getInstancia().anadirMensaje("Key callback called");
+}
 // - Esta función callback será llamada cada vez que se pulse algún botón
 // del ratón sobre el área de dibujo OpenGL.
 void mouse_button_callback ( GLFWwindow *window, int button, int action, int mods )
@@ -219,15 +217,24 @@ int main()
     PAG::GUI::getInstancia().anadirMensaje("Starting Application PAG - Prueba 01");
 
 
-    //Llamada a los métodos del shader
-try {
-    PAG::Renderer::getInstancia().cargarShader("../pag03");
-    PAG::Modelo* modeloPrueba = new PAG::Modelo("Triangulo de prueba");
-    modeloPrueba->crearTrianguloPrueba();
-    PAG::Renderer::getInstancia().anadirModelo(modeloPrueba);
-} catch (const std::runtime_error& e) {
-    PAG::GUI::getInstancia().anadirMensaje(e.what());
-}
+    try {
+        PAG::Renderer::getInstancia().cargarShader("../pag03");
+        PAG::Modelo* modeloInicial = new PAG::Modelo("Modelo Inicial");
+
+        modeloInicial->cargarDesdeOBJ("../modelos/Jaster.obj");
+
+        modeloInicial->setPosicion(glm::vec3(0.0f, -1.0f, -0.140f));
+        modeloInicial->setRotacion(glm::vec3(0.0f, 0.0f, 0.0f));
+        modeloInicial->setEscala(glm::vec3(0.060f, 0.060f, 0.060f));
+
+        PAG::Renderer::getInstancia().anadirModelo(modeloInicial);
+        PAG::GUI::getInstancia().anadirMensaje("Modelo por defecto cargado exitosamente");
+
+    } catch (const std::runtime_error& e) {
+        PAG::GUI::getInstancia().anadirMensaje(e.what());
+    } catch (const std::exception& e) {
+        PAG::GUI::getInstancia().anadirMensaje(e.what());
+    }
 
 // - Ciclo de eventos de la aplicación. La condición de parada es que la
 // ventana principal deba cerrarse, por ejemplo, si el usuario pulsa el
