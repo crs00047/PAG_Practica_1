@@ -41,7 +41,17 @@ namespace PAG {
             shader->setMat4("view", camara.getViewMatrix());
             shader->setMat4("projection", camara.getProjectionMatrix());
 
+            if (modoVisualizacionActual == ModoVisualizacion::ALAMBRE) {
+                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+                shader->setSubrutinaActiva("colorAlambre");
+            } else {
+                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+                shader->setSubrutinaActiva("colorSolido");
+            }
+
             for (Modelo* modelo : modelos) {
+                // Pasamos el color difuso del material al shader
+                shader->setVec3("colorDifuso", modelo->getMaterial().colorDifuso);
                 modelo->dibujar(shader);
             }
         }

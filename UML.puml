@@ -1,87 +1,89 @@
 @startuml
-namespace PAG {
-
-    enum MovimientoCamara {
-        PAN
-        TILT
-        DOLLY
-        CRANE
-        ORBIT
-        ZOOM
-    }
-
-    class Camara {
-        - posicion : glm::vec3
-        - lookAt : glm::vec3
-        - up : glm::vec3
-        - fovy : float
-        - aspect : float
-        - zNear : float
-        - zFar : float
-        + Camara()
-        + setAspect(a : float) : void
-        + getViewMatrix() : glm::mat4
-        + getProjectionMatrix() : glm::mat4
-        + procesarMovimiento(mov : MovimientoCamara, dx : float, dy : float) : void
-    }
-
-    class Shader {
-        - idVS : GLuint
-        - idFS : GLuint
-        - idSP : GLuint
-        + Shader()
-        + ~Shader()
-        + compilarYEnlazar(nombreComun : const std::string&) : void
-        + activar() : void
-        + setMat4(nombre : const std::string&, mat : const glm::mat4&) : void
-    }
-
-    class Renderer {
-        - {static} instancia : Renderer*
-        - colorFondo : float[4]
-        - idVAO : GLuint
-        - idVBO : GLuint
-        - idIBO : GLuint
-        - shader : Shader*
-        - camara : Camara
-        - Renderer()
-        + ~Renderer()
-        + {static} getInstancia() : Renderer&
-        + inicializarOpenGL() : void
-        + window_refresh() : void
-        + framebuffer_size(width : int, height : int) : void
-        + setColorFondo(r : float, g : float, b : float, a : float) : void
-        + getColorFondo() : const float*
-        + cargarShader(nombreComun : const std::string&) : void
-        + creaModelo() : void
-        + moverCamara(dx : float, dy : float) : void
-        + setMovimientoCamara(tipoMovimiento : int) : void
-    }
-
-    class GUI {
-        - {static} instacia : GUI*
-        - colorGUI : float[3]
-        - mensajes : std::vector<std::string>
-        - nombreShader : char[128]
-        - movimientoActual : int
-        - GUI()
-        + ~GUI()
-        + {static} getInstancia() : GUI&
-        + inicializar(window : GLFWwindow*) : void
-        + nuevoFrame() : void
-        + renderizarControles() : void
-        + dibujar() : void
-        + finalizar() : void
-        + anadirMensaje(msg : const std::string&) : void
-        + capturaRaton() : bool
-        + capturaTeclado() : bool
-        + getMovimientoActual() : int
-    }
-
-    Renderer *-- Camara : contiene
-    Renderer o-- Shader : referencia
-    Camara ..> MovimientoCamara : usa
-    Renderer ..> GUI : consulta
-    GUI ..> Renderer : invoca
+enum ModoVisualizacion {
+    ALAMBRE
+    SOLIDO
 }
+
+struct Material {
+    + colorAmbiente : vec3
+    + colorDifuso : vec3
+    + colorEspecular : vec3
+    + exponenteEspecular : float
+}
+
+class Renderer {
+    - {static} instancia : Renderer*
+    - colorFondo : float[4]
+    - modoVisualizacion : ModoVisualizacion
+    - modelos : std::vector<Modelo*>
+    - shader : Shader*
+    - camara : Camara
+    + {static} getInstancia() : Renderer
+    + inicializarOpenGL() : void
+    + window_refresh() : void
+    + framebuffer_size(width: int, height: int) : void
+    + cargarShader(nombreComun: string) : void
+    + anadirModelo(m: Modelo*) : void
+    + eliminarModelo(index: int) : void
+    + getModelos() : std::vector<Modelo*>
+    + setModoVisualizacion(modo: int) : void
+    + getModoVisualizacion() : int
+}
+
+class Modelo {
+    - idVAO : GLuint
+    - idVBO : GLuint
+    - idIBO : GLuint
+    - numIndices : int
+    - posicion : glm::vec3
+    - rotacion : glm::vec3
+    - escala : glm::vec3
+    - material : Material
+    + cargarDesdeOBJ(ruta: string) : void
+    + dibujar(shader: Shader*) : void
+    + getMatrizModelado() : mat4
+    + setPosicion(p: vec3) : void
+    + setRotacion(r: vec3) : void
+    + setEscala(e: vec3) : void
+    + getMaterial() : Material&
+}
+
+class GUI {
+    - {static} instancia : GUI*
+    - mensajes : std::vector<string>
+    - modeloSeleccionado : int
+    - inputPosicion : float[3]
+    - inputRotacion : float[3]
+    - inputEscala : float[3]
+    + {static} getInstancia() : GUI
+    + renderizarControles() : void
+    + anadirMensaje(msg: string) : void
+}
+
+class Camara {
+    - posicion : glm::vec3
+    - lookAt : glm::vec3
+    - fov : float
+    + getViewMatrix() : mat4
+    + getProjectionMatrix() : mat4
+    + procesarMovimiento(mov: MovimientoCamara, dx: float, dy: float) : void
+}
+
+class Shader {
+    - idVS : GLuint
+    - idFS : GLuint
+    - idSP : GLuint
+    + compilarYEnlazar(nombre: string) : void
+    + activar() : void
+    + setMat4(nombre: string, mat: mat4) : void
+    + setVec3(nombre: string, vec: vec3) : void
+    + setSubrutinaActiva(nombreSubrutina: string) : void
+}
+
+Renderer "1" *-- "0..*" Modelo : contiene
+Renderer "1" *-- "1" Shader : usa
+Renderer "1" *-- "1" Camara : usa
+Modelo "1" *-- "1" Material : tiene
+Renderer --> ModoVisualizacion : usa
+GUI ..> Renderer : interactúa
 @enduml

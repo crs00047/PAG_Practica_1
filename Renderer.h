@@ -28,6 +28,8 @@ namespace PAG {
         Camara camara;
         std::vector<Modelo*> modelos;
 
+        ModoVisualizacion modoVisualizacionActual = ModoVisualizacion::SOLIDO;
+
     public:
 
         virtual ~Renderer();
@@ -49,6 +51,13 @@ namespace PAG {
         void anadirModelo(Modelo* m) { modelos.push_back(m); }
         void eliminarModelo(int index);
         std::vector<Modelo*>& getModelos() { return modelos; }
+
+        void setModoVisualizacion(int modo) {
+            modoVisualizacionActual = static_cast<ModoVisualizacion>(modo);
+        }
+        int getModoVisualizacion() const {
+            return static_cast<int>(modoVisualizacionActual);
+        }
 
     };
 

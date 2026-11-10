@@ -117,4 +117,16 @@ namespace PAG {
     void Shader::setMat4(const std::string &nombre, const glm::mat4 &mat) const {
         glUniformMatrix4fv(glGetUniformLocation(idSP, nombre.c_str()), 1, GL_FALSE, glm::value_ptr(mat));
     }
+
+    void Shader::setSubrutinaActiva(const std::string& nombreSubrutina) const {
+        GLuint indiceSubrutina = glGetSubroutineIndex(idSP, GL_FRAGMENT_SHADER, nombreSubrutina.c_str());
+        if (indiceSubrutina == GL_INVALID_INDEX) {
+            throw std::runtime_error("Error: Subrutina '" + nombreSubrutina + "' no encontrada en el shader.");
+        }
+        glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &indiceSubrutina);
+    }
+
+    void Shader::setVec3(const std::string &nombre, const glm::vec3 &vec) const {
+        glUniform3fv(glGetUniformLocation(idSP, nombre.c_str()), 1, glm::value_ptr(vec));
+    }
 }
