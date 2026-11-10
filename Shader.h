@@ -24,6 +24,9 @@ namespace PAG {
         void compilarYEnlazar(const std::string &nombreComun);
         void activar() const;
         void setMat4(const std::string &nombre, const glm::mat4 &mat) const;
+
+        void setSubrutinaActiva(const std::string& nombreSubrutina) const;
+        void setVec3(const std::string &nombre, const glm::vec3 &vec) const;
     };
 }
 

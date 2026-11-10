@@ -13,6 +13,20 @@
 #include <vector>
 #include "Shader.h"
 
+
+struct Material {
+    glm::vec3 colorAmbiente = glm::vec3(0.2f, 0.2f, 0.2f);
+    glm::vec3 colorDifuso = glm::vec3(0.8f, 0.8f, 0.8f);
+    glm::vec3 colorEspecular = glm::vec3(1.0f, 1.0f, 1.0f);
+    float exponenteEspecular = 32.0f;
+};
+
+enum class ModoVisualizacion {
+    ALAMBRE,
+    SOLIDO
+};
+
+
 namespace PAG {
     class Modelo {
     private:
@@ -24,6 +38,8 @@ namespace PAG {
         glm::vec3 posicion;
         glm::vec3 rotacion;
         glm::vec3 escala;
+
+        Material material;
 
     public:
         std::string nombre;
@@ -45,6 +61,8 @@ namespace PAG {
         void crearTrianguloPrueba();
         void dibujar(Shader* shader);
         void cargarDesdeOBJ(const std::string& rutaArchivo);
+
+        Material& getMaterial() { return material; }
     };
 }
 
