@@ -126,3 +126,22 @@ Renderer "1" *-- "1" Shader : usa
 Renderer "1" *-- "1" Camara : usa
 GUI ..> Renderer : interactúa
 @enduml
+```
+
+
+# Práctica 7
+## Solución
+
+
+En el primer commit modifico los archivos GLSL para implementar las rutinas y los bloques de interfaz.
+Por un la lado, el bloque datosVS, para salida y entrada de variables geométricas.
+Por otro lado, la subrutina fCalcularColor con 2 implementasciones, colorAlambre(color fijo) y colorSolido(procesa colorDifuso)
+
+En el segundo commit, creamos el struct Material dentro de la clase Modelo, así como la clase enum
+ModoVisualización que esta se gestiona en la clase Renderer.
+
+Durante este proceso tuve que depurar un error de compilación en el Fragment Shader asegurándonos de declarar correctamente dicho uniform antes de definir las subrutinas.
+
+En este último commit, se incluye dentro del método window_refresh de la clase Renderer la lógica para poder aplicar las subrutinas dependiendo del modo activado.
+También cambiamos la interfaz para permitir el cambio de materiales en el modelo y el modo de visualización.
+Por último la actualización del UML dentro del archivo UML.puml
