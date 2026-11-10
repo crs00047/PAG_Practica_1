@@ -147,29 +147,48 @@ namespace PAG {
         }
         ImGui::End();
 
-        ImGui::SetNextWindowPos(ImVec2(10, 450), ImGuiCond_Once);
-        if (ImGui::Begin("Transformaciones")) {
+        ImGui::SetNextWindowPos(ImVec2(740, 150), ImGuiCond_Once);
+        if (ImGui::Begin("Propiedades del Modelo")) {
             auto& modelos = PAG::Renderer::getInstancia().getModelos();
             if (modeloSeleccionado >= 0 && modeloSeleccionado < modelos.size()) {
                 PAG::Modelo* m = modelos[modeloSeleccionado];
 
-                ImGui::InputFloat3("Posición", inputPosicion);
-                ImGui::InputFloat3("Rotación", inputRotacion);
-                ImGui::InputFloat3("Escala", inputEscala);
+                if (ImGui::CollapsingHeader("Transformaciones", ImGuiTreeNodeFlags_DefaultOpen)) {
+                    ImGui::InputFloat3("Posición", inputPosicion);
+                    ImGui::InputFloat3("Rotación", inputRotacion);
+                    ImGui::InputFloat3("Escala", inputEscala);
 
-                if (ImGui::Button("Aplicar Transformación")) {
-                    m->setPosicion(glm::vec3(inputPosicion[0], inputPosicion[1], inputPosicion[2]));
-                    m->setRotacion(glm::vec3(inputRotacion[0], inputRotacion[1], inputRotacion[2]));
-                    m->setEscala(glm::vec3(inputEscala[0], inputEscala[1], inputEscala[2]));
+                    if (ImGui::Button("Aplicar Transformación")) {
+                        m->setPosicion(glm::vec3(inputPosicion[0], inputPosicion[1], inputPosicion[2]));
+                        m->setRotacion(glm::vec3(inputRotacion[0], inputRotacion[1], inputRotacion[2]));
+                        m->setEscala(glm::vec3(inputEscala[0], inputEscala[1], inputEscala[2]));
+                        anadirMensaje("Transformaciones aplicadas a " + m->nombre);
+                    }
+                }
 
-                    anadirMensaje("Transformaciones aplicadas a " + m->nombre);
+                if (ImGui::CollapsingHeader("Material", ImGuiTreeNodeFlags_DefaultOpen)) {
+                    Material& mat = m->getMaterial();
+
+                    ImGui::ColorEdit3("Color Ambiente", &mat.colorAmbiente[0]);
+                    ImGui::ColorEdit3("Color Difuso", &mat.colorDifuso[0]);
+                    ImGui::ColorEdit3("Color Especular", &mat.colorEspecular[0]);
+                    ImGui::SliderFloat("Brillo (Exponente)", &mat.exponenteEspecular, 1.0f, 128.0f);
                 }
             } else {
-                ImGui::Text("Selecciona un modelo primero.");
+                ImGui::Text("Selecciona un modelo primero en 'Gestión de Modelos'.");
             }
         }
         ImGui::End();
 
+        ImGui::SetNextWindowPos(ImVec2(10, 600), ImGuiCond_Once);
+        if (ImGui::Begin("Visualización")) {
+            int modoActual = PAG::Renderer::getInstancia().getModoVisualizacion();
+            const char* modos[] = { "Alambre", "Sólido" };
+            if (ImGui::Combo("Modo Dibujado", &modoActual, modos, 2)) {
+                PAG::Renderer::getInstancia().setModoVisualizacion(modoActual);
+            }
+        }
+        ImGui::End();
 
     }
 

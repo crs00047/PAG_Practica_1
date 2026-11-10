@@ -7,6 +7,7 @@ in datosVS {
 } entrada;
 
 out vec4 colorFragmento;
+uniform vec3 colorDifuso;
 
 // 1. Definición del tipo de la subrutina
 subroutine vec4 fCalcularColor();
